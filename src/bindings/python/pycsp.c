@@ -263,7 +263,7 @@ static PyObject* pycsp_transaction(PyObject *self, PyObject *args) {
 
     int res;
     Py_BEGIN_ALLOW_THREADS;
-    res = csp_transaction(prio, dest, port, timeout, outbuf.buf, outbuf.len, inbuf.buf, inbuf.len);
+    res = csp_transaction(prio, dest, port, timeout, outbuf.buf, outbuf.len, inbuf.buf, -1);
     Py_END_ALLOW_THREADS;
     if (res < 1) {
         return PyErr_Error("csp_transaction()", res);
@@ -792,24 +792,24 @@ static PyObject* pycsp_cmp_clock_get(PyObject *self, PyObject *args) {
                          csp_ntoh32(msg.clock.tv_nsec));
 }
 
-static PyObject* pycsp_zmqhub_init(PyObject *self, PyObject *args) {
-    char addr;
-    char* host;
-    if (!PyArg_ParseTuple(args, "bs", &addr, &host)) {
-        return NULL; // TypeError is thrown
-    }
+// static PyObject* pycsp_zmqhub_init(PyObject *self, PyObject *args) {
+//     char addr;
+//     char* host;
+//     if (!PyArg_ParseTuple(args, "bs", &addr, &host)) {
+//         return NULL; // TypeError is thrown
+//     }
 
-    int res = csp_zmqhub_init(addr, host, 0, NULL);
-    if (res != CSP_ERR_NONE) {
-        return PyErr_Error("csp_zmqhub_init()", res);
-    }
+//     int res = csp_zmqhub_init(addr, host, 0, NULL);
+//     if (res != CSP_ERR_NONE) {
+//         return PyErr_Error("csp_zmqhub_init()", res);
+//     }
 
-    Py_RETURN_NONE;
-}
+//     Py_RETURN_NONE;
+// }
 
 static PyObject* pycsp_can_socketcan_init(PyObject *self, PyObject *args) {
     char* ifc;
-    int bitrate = 1000000;
+    int bitrate = 500000;
     int promisc = 0;
     if (!PyArg_ParseTuple(args, "s|ii", &ifc, &bitrate, &promisc)) {
         return NULL;
@@ -947,7 +947,7 @@ static PyMethodDef methods[] = {
     {"cmp_clock_get",       pycsp_cmp_clock_get,       METH_VARARGS, ""},
 
     /* csp/interfaces/csp_if_zmqhub.h */
-    {"zmqhub_init",         pycsp_zmqhub_init,         METH_VARARGS, ""},
+    // {"zmqhub_init",         pycsp_zmqhub_init,         METH_VARARGS, ""},
     {"kiss_init",           pycsp_kiss_init,           METH_VARARGS, ""},
 
     /* csp/drivers/can_socketcan.h */

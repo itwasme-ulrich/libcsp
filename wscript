@@ -229,16 +229,21 @@ def build(ctx):
                     lib=ctx.env.LIBS,
                     use='csp')
 
-        ctx.program(source='examples/csp_arch.c',
-                    target='csp_arch',
-                    lib=ctx.env.LIBS,
-                    use='csp')
+        # ctx.program(source='examples/csp_arch.c',
+        #             target='csp_arch',
+        #             lib=ctx.env.LIBS,
+        #             use='csp')
 
-        if ctx.env.CSP_HAVE_LIBZMQ:
-            ctx.program(source='examples/zmqproxy.c',
-                        target='zmqproxy',
-                        lib=ctx.env.LIBS,
-                        use='csp')
+        # if ctx.env.CSP_HAVE_LIBZMQ:
+        #     ctx.program(source='examples/zmqproxy.c',
+        #                 target='zmqproxy',
+        #                 lib=ctx.env.LIBS,
+        #                 use='csp')
+
+        ctx.program(source = ['00_Dev16/DevSrc/exp_csp_client.c'],
+                    target='exp_csp_client',
+                    lib = ctx.env.LIBS,
+                    use = 'csp')
 
 
 def dist(ctx):
