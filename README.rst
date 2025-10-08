@@ -12,7 +12,7 @@ Directory Layout
 ::
     .
     ├── dev_buildall.py     # Python-based Waf build helper
-    ├── sbuild.sh        # unified wrapper script (recommended)
+    ├── ../allbuild.sh        # unified wrapper script (recommended)
     ├── 00_Dev16/DevBuild/  # build output directory
     └── src/                # main source files
 
