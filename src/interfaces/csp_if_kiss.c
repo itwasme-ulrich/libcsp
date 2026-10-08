@@ -33,8 +33,13 @@ int csp_kiss_tx(csp_iface_t * iface, uint16_t via, csp_packet_t * packet, int fr
 	/* Lock (before modifying packet) */
 	csp_usart_lock(driver);
 
-	/* Add CRC32 checksum */
-	csp_crc32_append(packet);
+	/* Add CRC32 checksum. Upstream ignores the result and sends a packet that has no room left
+	 * for the CRC without one, which the far end then drops as a CRC error. Report it as a
+	 * transmit failure: csp_send_direct_iface() frees the packet and counts iface->tx_error. */
+	if (csp_crc32_append(packet) != CSP_ERR_NONE) {
+		csp_usart_unlock(driver);
+		return CSP_ERR_NOMEM;
+	}
 
 	/* Save the outgoing id in the buffer */
 	csp_id_prepend(packet);
@@ -45,21 +50,31 @@ int csp_kiss_tx(csp_iface_t * iface, uint16_t via, csp_packet_t * packet, int fr
 	const unsigned char esc_esc[] = {FESC, TFESC};
 	const unsigned char * data = packet->frame_begin;
 
-	ifdata->tx_func(driver, start, sizeof(start));
+	if (ifdata->tx_func(driver, start, sizeof(start)) != CSP_ERR_NONE) {
+		goto tx_err;
+	}
 
 	for (unsigned int i = 0; i < packet->frame_length; i++, ++data) {
 		if (*data == FEND) {
-			ifdata->tx_func(driver, esc_end, sizeof(esc_end));
+			if (ifdata->tx_func(driver, esc_end, sizeof(esc_end)) != CSP_ERR_NONE) {
+				goto tx_err;
+			}
 			continue;
 		}
 		if (*data == FESC) {
-			ifdata->tx_func(driver, esc_esc, sizeof(esc_esc));
+			if (ifdata->tx_func(driver, esc_esc, sizeof(esc_esc)) != CSP_ERR_NONE) {
+				goto tx_err;
+			}
 			continue;
 		}
-		ifdata->tx_func(driver, data, 1);
+		if (ifdata->tx_func(driver, data, 1) != CSP_ERR_NONE) {
+			goto tx_err;
+		}
 	}
 	const unsigned char stop[] = {FEND};
-	ifdata->tx_func(driver, stop, sizeof(stop));
+	if (ifdata->tx_func(driver, stop, sizeof(stop)) != CSP_ERR_NONE) {
+		goto tx_err;
+	}
 
 	/* Unlock */
 	csp_usart_unlock(driver);
@@ -68,6 +83,12 @@ int csp_kiss_tx(csp_iface_t * iface, uint16_t via, csp_packet_t * packet, int fr
 	csp_buffer_free(packet);
 
 	return CSP_ERR_NONE;
+
+tx_err:
+	/* csp_send_direct_iface() frees the packet and counts iface->tx_error when the
+	 * interface reports a failure, so it must not be freed here. */
+	csp_usart_unlock(driver);
+	return CSP_ERR_TX;
 }
 
 /**
