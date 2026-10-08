@@ -7,7 +7,7 @@ This is a maintenance fork of [libcsp](https://github.com/libcsp/libcsp).
 | Upstream | https://github.com/libcsp/libcsp |
 | Base release | `v2.1` (`48f7fb0b57f610bf65bab1aa2d1357c3b9722782`) |
 | Maintenance branch | `v2.1-vinspace` |
-| Release tags | `v2.1-vinspace.1`, `v2.1-vinspace.2`, ... |
+| Release tags | `v2.1-vcsp.1`, `v2.1-vcsp.2`, ... |
 | Change log | [CHANGELOG-VCSP.md](CHANGELOG-VCSP.md) |
 | License | MIT, unchanged (see `LICENSE`) |
 
