@@ -5,7 +5,8 @@ See [VCSP.md](VCSP.md)
 ## Unreleased
 | Commit | Area | Source | Detail | 
 |---|---|---|---| 
-| (hash) | service | upstream e4000a2 | CSP_PS freed the packet then replied with it: `rps` corrupted the buffer pool |
+| #2 | rtable | upstream 5f8f0d0 | Insert index clamped one past the end of the route table when full |
+| #1 | service | upstream e4000a2 | CSP_PS freed the packet then replied with it: `rps` corrupted the buffer pool |
 
 
 
