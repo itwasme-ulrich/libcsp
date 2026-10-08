@@ -5,6 +5,8 @@ See [VCSP.md](VCSP.md)
 ## Unreleased
 | Commit | Area | Source | Detail | 
 |---|---|---|---| 
+| #11 | csp_io | upstream 2626f38 | csp_accept() on a connection-less socket now returns NULL instead of misbehaving |
+| #10 | route | upstream cd07298, c9efc26, addcf14, cf30f10, 8f3dee9, 3932210 (#764) | A packet for a socket bound but not yet listening crashed the router (NULL rx_queue); now dropped until csp_listen() |
 | #9 | kiss | upstream issue #854 + own| A frame whose data exactly filled the packet buffer was dropped at its closing FEND |
 | #8 | kiss | upstream a4ecaa5 + own | TX errors were discarded: tx_error never counted, and a packet with no room for the CRC32 was sent without one |
 | #7 | rdp | upstream PR #970, issues #963 #966 | A packet shorter than the RDP header, or a short SYN, made the router read and write outside the buffer |
