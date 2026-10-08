@@ -4,6 +4,7 @@
  *  Created on: 30. jun. 2020
  *      Author: johan
  */
+#include "csp/autoconfig.h"
 
 #include <endian.h>
 #include <csp/csp.h>
@@ -257,6 +258,14 @@ unsigned int csp_id_get_max_port(void) {
 		return ((1 << CSP_ID1_PORT_SIZE) - 1);
 	}
 }
+
+/* csp_conn_init() assigns one outgoing source port to each slot.
+ * CSP_STATIC_ASSERT (csp_types.h) instead of C11 static_assert, so this builds as C99 too
+ */
+CSP_STATIC_ASSERT(CSP_PORT_MAX_BIND + CSP_CONN_MAX <= CSP_ID1_SPORT_MASK,
+                                  csp_port_max_bind_plus_conn_max_exceeds_csp1_sport_range);
+CSP_STATIC_ASSERT(CSP_PORT_MAX_BIND + CSP_CONN_MAX <= CSP_ID2_SPORT_MASK,
+                                  csp_port_max_bind_plus_conn_max_exceeds_csp2_sport_range);
 
 int csp_id_is_broadcast(uint16_t addr, csp_iface_t * iface) {
 	uint16_t hostmask = (1 << (csp_id_get_host_bits() - iface->netmask)) - 1;
