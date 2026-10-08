@@ -29,6 +29,8 @@
 #define RDP_EAK 0x02
 #define RDP_RST 0x01
 
+#define RDP_SYN_OPTIONS_LENGTH (6U * sizeof(uint32_t))
+
 #ifndef CSP_USE_RDP_FAST_CLOSE
 #define CSP_USE_RDP_FAST_CLOSE 1
 #endif
@@ -442,6 +444,12 @@ bool csp_rdp_new_packet(csp_conn_t * conn, csp_packet_t * packet) {
 
 	bool close_connection = false;
 
+	if (packet->length < sizeof(rdp_header_t)) {
+		csp_rdp_error("RDP %p: Packet too short for RDP header\n", (void *)conn);
+		csp_buffer_free(packet);
+		return false;
+	}
+
 	/* Get RX header and convert to host byte-order */
 	rdp_header_t * rx_header = csp_rdp_header_ref(packet);
 	rx_header->ack_nr = be16toh(rx_header->ack_nr);
@@ -517,6 +525,11 @@ bool csp_rdp_new_packet(csp_conn_t * conn, csp_packet_t * packet) {
 			}
 
 			csp_rdp_protocol("RDP %p: SYN-Received\n", (void *)conn);
+
+			if (packet->length < (sizeof(rdp_header_t) + RDP_SYN_OPTIONS_LENGTH)) {
+				csp_rdp_error("RDP %p: SYN packet too short for options\n", (void *)conn);
+				goto discard_close;
+			}
 
 			/* Setup TX seq. */
 			unsigned int seed = csp_get_ms();
