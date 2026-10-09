@@ -12,8 +12,14 @@
     typedef sem_t csp_bin_sem_t;
 #elif (CSP_FREERTOS)
     #include <FreeRTOS.h>
-    #include <semphr.h>
-    typedef StaticSemaphore_t csp_bin_sem_t;
+    #if defined(configSUPPORT_STATIC_ALLOCATION) && (configSUPPORT_STATIC_ALLOCATION == 1)
+        #include <semphr.h>
+        typedef StaticSemaphore_t csp_bin_sem_t;
+    #else
+        /* No static allocation (FreeRTOS < 9.0): arch/freertos cannot be used, the
+         * application's own csp_bin_sem_*() keeps a semaphore handle in this slot */
+        typedef void * csp_bin_sem_t;
+    #endif
 #elif (CSP_ZEPHYR)
     #include <zephyr/kernel.h>
     typedef struct k_sem csp_bin_sem_t;
