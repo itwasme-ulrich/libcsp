@@ -5,6 +5,7 @@ See [VCSP.md](VCSP.md) for the rules.
 ## Unreleased
 | No. | Commit | Area | Source | Detail |
 |---|---|---|---|---|
+| 19 | #20 | route, rdp | Space Inventor fork f0b4b14 (edvard) | A plain packet with an RDP connection's identifier reached the application past RDP; an RDP packet with a plain connection's identifier made the router close the application's connection |
 | 18 | #19 | freertos | upstream PR #1033 (open) 6c12344, adapted | csp_bin_sem on task notifications: the router woke whichever task last waited on a connection slot, so a task's second RDP connect failed early and a deleted task's freed TCB was written; now a binary semaphore (about 76 B more per connection) |
 | 17 | #18 | can | own (upstream issue #962) | CAN reassembly with the buffer pool empty hung in csp_panic()'s while(1); now drops the frame and counts iface->drop |
 | 16 | #17 | zmqhub | upstream 0abf547 (issues #952, #971) | A ZMQ frame longer than the packet buffer was copied unchecked: buffers overwritten, crash on very long frames; now dropped and counted in rx_error |
