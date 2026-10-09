@@ -3,8 +3,9 @@ Every change merged into `v2.1-vinspace`, newest first.
 See [VCSP.md](VCSP.md) for the rules.
 
 ## Unreleased
-
-_Nothing yet._
+| Commit | Area | Source | Detail |
+|---|---|---|---|
+| #12 | can, eth | upstream 13037a7, aeb547a, 46bd82c (#956) | Timed-out CAN/ETH reassembly cleanup read freed buffers: list corruption, endless loop in csp_can_pbuf_free() |
 
 ## v2.1-vcsp.1 (2026-10-08)
 | Commit | Area | Source | Detail |
