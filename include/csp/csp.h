@@ -349,6 +349,16 @@ void csp_bridge_work(void);
 void csp_service_handler(csp_packet_t *packet);
 
 /**
+ * Build the reply of a CSP service request (ping, ps, memfree, buffree, uptime, CMP) in the packet itself.
+ * Unlike csp_service_handler(), nothing is sent: a connection server sends the reply on its connection
+ * with csp_send(), which an RDP connection needs.
+ *
+ * @param[in] packet request, consumed
+ * @return the reply to send, or NULL when there is none (reboot/shutdown, unknown port, errors)
+ */
+csp_packet_t * csp_service_reply(csp_packet_t *packet);
+
+/**
  * Send a single ping/echo packet.
  *
  * @param[in] node address of subsystem.

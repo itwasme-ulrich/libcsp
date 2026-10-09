@@ -206,7 +206,11 @@ static int csp_cmp_handler(csp_packet_t * packet) {
 	return ret;
 }
 
-void csp_service_handler(csp_packet_t * packet) {
+/* Builds the reply to a CSP service request in the request packet itself. Returns the packet to send back, or
+ * NULL when there is no reply (the packet was freed). Senders choose the way back: csp_sendto_reply() for
+ * connection-less requests (csp_service_handler), csp_send() on the connection for a connection server,
+ * which RDP needs (the reply must travel inside the connection). */
+csp_packet_t * csp_service_reply(csp_packet_t * packet) {
 
 	switch (packet->id.dport) {
 
@@ -214,7 +218,7 @@ void csp_service_handler(csp_packet_t * packet) {
 			/* Pass to CMP handler */
 			if (csp_cmp_handler(packet) != CSP_ERR_NONE) {
 				csp_buffer_free(packet);
-				return;
+				return NULL;
 			}
 			break;
 
@@ -227,7 +231,7 @@ void csp_service_handler(csp_packet_t * packet) {
 			if (packet->length == 0) {
 				csp_buffer_free(packet);
 				// upstream e4000a2
-				return;
+				return NULL;
 			}
 			break;
 		}
@@ -258,7 +262,7 @@ void csp_service_handler(csp_packet_t * packet) {
 			}
 
 			csp_buffer_free(packet);
-			return;
+			return NULL;
 		}
 
 		case CSP_BUF_FREE: {
@@ -279,10 +283,16 @@ void csp_service_handler(csp_packet_t * packet) {
 
 		default:
 			csp_buffer_free(packet);
-			return;
+			return NULL;
 	}
 
-	if (packet != NULL) {
-		csp_sendto_reply(packet, packet, CSP_O_SAME);
+	return packet;
+}
+
+void csp_service_handler(csp_packet_t * packet) {
+
+	csp_packet_t * reply = csp_service_reply(packet);
+	if (reply != NULL) {
+		csp_sendto_reply(reply, reply, CSP_O_SAME);
 	}
 }
