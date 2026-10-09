@@ -7,7 +7,7 @@ See [VCSP.md](VCSP.md) for the rules.
 |---|---|---|---|---|
 
 ## v2.1-vcsp.2 (2026-10-09)
-| No. | Commit | Area | Source | Detail |
+| No. | PR | Area | Source | Detail |
 |---|---|---|---|---|
 | 19 | #20 | route, rdp | Space Inventor fork f0b4b14 (edvard) | A plain packet with an RDP connection's identifier reached the application past RDP; an RDP packet with a plain connection's identifier made the router close the application's connection |
 | 18 | #19 | freertos | upstream PR #1033 (open) 6c12344, adapted | csp_bin_sem on task notifications: the router woke whichever task last waited on a connection slot, so a task's second RDP connect failed early and a deleted task's freed TCB was written; now a binary semaphore (about 76 B more per connection) |
@@ -19,7 +19,7 @@ See [VCSP.md](VCSP.md) for the rules.
 | 12 | #13 | can, eth | upstream 13037a7, aeb547a, 46bd82c (#956) | Timed-out CAN/ETH reassembly cleanup read freed buffers: list corruption, endless loop in csp_can_pbuf_free() |
 
 ## v2.1-vcsp.1 (2026-10-08)
-| No. | Commit | Area | Source | Detail |
+| No. | PR | Area | Source | Detail |
 |---|---|---|---|---|
 | 11 | #10 | csp_io | upstream 2626f38 | csp_accept() on a connection-less socket now returns NULL instead of misbehaving |
 | 10 | #10 | route | upstream cd07298, c9efc26, addcf14, cf30f10, 8f3dee9, 3932210 (#764) | A packet for a socket bound but not yet listening crashed the router (NULL rx_queue); now dropped until csp_listen() |
