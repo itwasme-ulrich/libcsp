@@ -5,6 +5,8 @@ See [VCSP.md](VCSP.md) for the rules.
 ## Unreleased
 | Commit | Area | Source | Detail |
 |---|---|---|---|
+| #16 | zmqhub | upstream 0abf547 (issues #952, #971) | A ZMQ frame longer than the packet buffer was copied unchecked: buffers overwritten, crash on very long frames; now 
+  dropped and counted in rx_error |
 | #15 | kiss | own (upstream issue #962) | RX with the buffer pool empty hung in csp_panic()'s while(1) (default csp_panic() returns); now drops the frame and counts iface->drop |
 | #14 | service | own | Service replies (ping, CMP, uptime, ...) over RDP had no RDP header; csp_service_reply() lets a connection server reply on the connection |
 | #13 | csp_io | forks endurosat/csp-es a839a253, kfsw 0322607c | A request to the node's own address left with source 0, so its reply went to node 0 |

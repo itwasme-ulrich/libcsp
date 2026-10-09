@@ -125,6 +125,13 @@ static void * csp_zmqhub_task(void * param) {
 			continue;
 		}
 
+		if (datalen > HEADER_SIZE + sizeof(packet->data)) {
+			drv->iface.rx_error++;
+			csp_print("ZMQ RX %s: Too long datalen: %u - expected max %u bytes\n", drv->iface.name, datalen, HEADER_SIZE + sizeof(packet->data));
+			zmq_msg_close(&msg);
+			continue;
+		}
+		
 		// Create new csp packet
 		packet = csp_buffer_get(0);
 		if (packet == NULL) {
