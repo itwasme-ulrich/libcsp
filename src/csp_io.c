@@ -102,7 +102,13 @@ void csp_send_direct(csp_id_t* idout, csp_packet_t * packet, csp_iface_t * route
 
 	/* Quickly send on loopback */
 	if(idout->dst == csp_if_lo.addr){
-		csp_send_direct_iface(idout, packet, &csp_if_lo, via, from_me);
+		/* Apply the loopback address as source, like the interface path below does: otherwise a request to
+		 * this node's own address leaves with source 0 and the reply goes to node 0 */
+		csp_id_t lo_id = *idout;
+		if (from_me && (lo_id.src == 0)) {
+			lo_id.src = csp_if_lo.addr;
+		}
+		csp_send_direct_iface(&lo_id, packet, &csp_if_lo, via, from_me);
 		return;
 	}
 
