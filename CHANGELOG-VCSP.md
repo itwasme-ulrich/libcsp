@@ -3,6 +3,10 @@ Every change merged into `v2.1-vinspace`, newest first.
 See [VCSP.md](VCSP.md) for the rules.
 
 ## Unreleased
+| No. | PR | Area | Source | Detail |
+|---|---|---|---|---|
+
+## v2.1-vcsp.2 (2026-10-09)
 | No. | Commit | Area | Source | Detail |
 |---|---|---|---|---|
 | 19 | #20 | route, rdp | Space Inventor fork f0b4b14 (edvard) | A plain packet with an RDP connection's identifier reached the application past RDP; an RDP packet with a plain connection's identifier made the router close the application's connection |
