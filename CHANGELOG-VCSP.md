@@ -5,6 +5,7 @@ See [VCSP.md](VCSP.md) for the rules.
 ## Unreleased
 | Commit | Area | Source | Detail |
 |---|---|---|---|
+| #17 | can | own (upstream issue #962) | CAN reassembly with the buffer pool empty hung in csp_panic()'s while(1); now drops the frame and counts iface->drop |
 | #16 | zmqhub | upstream 0abf547 (issues #952, #971) | A ZMQ frame longer than the packet buffer was copied unchecked: buffers overwritten, crash on very long frames; now 
   dropped and counted in rx_error |
 | #15 | kiss | own (upstream issue #962) | RX with the buffer pool empty hung in csp_panic()'s while(1) (default csp_panic() returns); now drops the frame and counts iface->drop |
