@@ -90,6 +90,28 @@ void csp_id_clear(csp_id_t * target) {
 	target->flags = 0;
 }
 
+/* Split horizon: a forwarded packet (routed_from != NULL) is never sent back where it came from. A router with one address on several point-to-point links (CSP version 1, libcsp issue #861). */
+static int csp_split_horizon(csp_iface_t * iface, csp_iface_t * routed_from) {
+	/* our own packet: no split horizon (unchanged) */
+	if (routed_from == NULL) {
+		return 0;
+	}
+
+	/* old rule 1, kept as is */
+	if (iface == routed_from) {
+		return 1;
+	}
+
+	const unsigned int host_bits = csp_id_get_host_bits();
+	if ((routed_from->netmask == 0) || (routed_from->netmask >= host_bits) ||
+		(iface->netmask == 0) || (iface->netmask >= host_bits)) {
+		/* not a shared segment: rule 2 does not apply */
+		return 0;
+	}
+	/* old rule 2, unchanged */
+	return csp_iflist_is_within_subnet(iface->addr, routed_from);
+}
+
 void csp_send_direct(csp_id_t* idout, csp_packet_t * packet, csp_iface_t * routed_from) {
 
 	int from_me = (routed_from == NULL ? 1 : 0);
@@ -119,14 +141,8 @@ void csp_send_direct(csp_id_t* idout, csp_packet_t * packet, csp_iface_t * route
 
 		local_found = 1;
 
-		/* Do not send back to same interface (split horizon)
-		 * This check is is similar to that below, but faster */
-		if (iface == routed_from) {
-			continue;
-		}
-
-		/* Do not send to interface with similar subnet (split horizon) */
-		if (csp_iflist_is_within_subnet(iface->addr, routed_from)) {
+		/* Do not send back where the packet came from (split horizon) */
+		if (csp_split_horizon(iface, routed_from)) {
 			continue;
 		}
 
@@ -164,14 +180,8 @@ void csp_send_direct(csp_id_t* idout, csp_packet_t * packet, csp_iface_t * route
 		do {
 			route_found = 1;
 
-			/* Do not send back to same interface (split horizon)
-			* This check is is similar to that below, but faster */
-			if (route->iface == routed_from) {
-				continue;
-			}
-
-			/* Do not send to interface with similar subnet (split horizon) */
-			if (csp_iflist_is_within_subnet(route->iface->addr, routed_from)) {
+			/* Do not send back where the packet came from (split horizon) */
+			if (csp_split_horizon(route->iface, routed_from)) {
 				continue;
 			}
 
@@ -198,14 +208,8 @@ void csp_send_direct(csp_id_t* idout, csp_packet_t * packet, csp_iface_t * route
 	/* Try to send via default interfaces */
 	while ((iface = csp_iflist_get_by_isdfl(iface)) != NULL) {
 
-		/* Do not send back to same interface (split horizon)
-		 * This check is is similar to that below, but faster */
-		if (iface == routed_from) {
-			continue;
-		}
-
-		/* Do not send to interface with similar subnet (split horizon) */
-		if (csp_iflist_is_within_subnet(iface->addr, routed_from)) {
+		/* Do not send back where the packet came from (split horizon) */
+		if (csp_split_horizon(iface, routed_from)) {
 			continue;
 		}
 
