@@ -5,6 +5,7 @@ See [VCSP.md](VCSP.md) for the rules.
 ## Unreleased
 | No. | PR | Area | Source | Detail |
 |---|---|---|---|---|
+| 20 | #23 | csp_io | own (upstream issue #861) | A router with one address on several point-to-point links (netmask 0 or host bits) forwarded nothing: every interface counted as the incoming segment; the segment rule now only applies between real segments (0 < netmask < host bits) |
 
 ## v2.1-vcsp.2 (2026-10-09)
 | No. | PR | Area | Source | Detail |
