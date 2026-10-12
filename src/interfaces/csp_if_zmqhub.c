@@ -76,12 +76,18 @@ void * csp_zmqhub_fixup_cspv1_del_dest_addr(uint8_t * rx_data, size_t * datalen)
  * @param packet Packet to transmit
  * @return 1 if packet was successfully transmitted, 0 on error
  */
-static int csp_zmqhub_tx(csp_iface_t * iface, uint16_t __maybe_unused via, csp_packet_t * packet, int __maybe_unused from_me) {
+static int csp_zmqhub_tx(csp_iface_t * iface, uint16_t via, csp_packet_t * packet, int __maybe_unused from_me) {
 
 	zmq_driver_t * drv = iface->driver_data;
 
 	csp_id_prepend_fixup_cspv1(packet);
 	csp_zmqhub_fixup_cspv1_add_dest_addr(packet);
+	/** 
+	 * CSPv1: the first byte is the next hop, as in libcsp 1.x. A 1.x node subscribes to its own
+	 * address only, so a packet routed via a 1.x gateway must carry the gateway's address. */
+	if ((csp_conf.version == 1) && (via != CSP_NO_VIA_ADDRESS)) {
+		*(packet->frame_begin) = (uint8_t)via;
+	}
 
 	/**
 	 * While a ZMQ context is thread safe, sockets are NOT threadsafe, so by sharing drv->publisher, we

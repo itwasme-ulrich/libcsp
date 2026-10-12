@@ -5,6 +5,7 @@ See [VCSP.md](VCSP.md) for the rules.
 ## Unreleased
 | No. | PR | Area | Source | Detail |
 |---|---|---|---|---|
+| 21 | #24 | zmqhub | own (upstream PR #738, issue #724) | CSPv1 over ZMQ put the destination instead of the route's via in the first byte: a libcsp 1.x node subscribes to its own address only, so packets routed through a 1.x gateway on the hub (`0/0 ZMQHUB 28`) were lost; the byte is now the via address when the route has one, as in libcsp 1.x |
 | 20 | #23 | csp_io | own (upstream issue #861) | A router with one address on several point-to-point links (netmask 0 or host bits) forwarded nothing: every interface counted as the incoming segment; the segment rule now only applies between real segments (0 < netmask < host bits) |
 
 ## v2.1-vcsp.2 (2026-10-09)
